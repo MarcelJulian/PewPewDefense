@@ -9,6 +9,7 @@ public class GameFrame {
 	Tile map = new Tile("testMap.txt", 32);
 	public GameFrame() {
 		// TODO Auto-generated constructor stub
+		System.out.println("A");
 		window.setSize(700,800);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setLocationRelativeTo(null);

@@ -17,6 +17,7 @@ public class Tile {
 	
 	public Tile(String s, int tileSize) {
 		this.tileSize = tileSize;
+		System.out.println("B");
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(s));
 			mapWidth = Integer.parseInt(br.readLine());
