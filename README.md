@@ -8,4 +8,4 @@ To test this game, simply clone the repository and compile it.
 
 ## Class Diagram
 
-Do open Class_Diagram.png to see the class diagram.
+Do open [Class_Diagram.png](https://github.com/MarcelJulian/PewPewDefense/blob/master/Class_Diagram.png) to see the class diagram.
