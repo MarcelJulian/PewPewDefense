@@ -2,6 +2,7 @@ package view;
 
 import javax.swing.JFrame;
 
+
 @SuppressWarnings("serial")
 public class GameFrame extends JFrame{
 	
@@ -19,5 +20,5 @@ public class GameFrame extends JFrame{
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
-	}
+}
 }
