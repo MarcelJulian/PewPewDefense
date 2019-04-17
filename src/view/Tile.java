@@ -61,6 +61,8 @@ public class Tile {
 		  icon.add(new ImageIcon("res/Images/icon_plus.png"));
 		  icon.add(new ImageIcon("res/Images/icon_titik.png"));
 		  icon.add(new ImageIcon("res/Images/icon_titikdua.png"));
+		  icon.add(new ImageIcon("res/Images/play.png"));
+		  icon.add(new ImageIcon("res/Images/EXIT.png"));
 		  momon.add(new ImageIcon("res/Images/momon_1.png"));
 		  momon.add(new ImageIcon("res/Images/momon_2.png"));
 		  momon.add(new ImageIcon("res/Images/momon_3.png"));
@@ -103,6 +105,8 @@ public class Tile {
 		  tower.add(new ImageIcon("res/Images/tower_2.png"));
 		  tower.add(new ImageIcon("res/Images/tower_3.png"));
 		  tower.add(new ImageIcon("res/Images/tower_4.png"));
+		  tower.add(new ImageIcon("res/Images/tower1281.png"));
+		  tower.add(new ImageIcon("res/Images/1282.png"));
 		  tower_h.add(new ImageIcon("res/Images/tower_1_h.png"));
 		  tower_h.add(new ImageIcon("res/Images/tower_2_h.png"));
 		  tower_h.add(new ImageIcon("res/Images/tower_3_h.png"));
