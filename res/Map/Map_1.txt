@@ -15,6 +15,7 @@
 
 0-13 tile
 21-28 deco
+31-33 tower
 
 bullet_1.png    
 bullet_10.png   

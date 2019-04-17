@@ -1,14 +1,14 @@
 package view;
 
 import java.awt.*;
-import java.util.Vector;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import javafx.scene.shape.Rectangle;
 
 @SuppressWarnings("serial")
 public class StatsPanel extends JPanel{
@@ -16,45 +16,68 @@ public class StatsPanel extends JPanel{
 	private final int PANELHEIGHT = GameFrame.GAMEHEIGHT + GameFrame.BORDERSIZE * 2;
 
 	private JLabel wave = new JLabel("Wave 1");
-	private ImageIcon tower_0 = Tile.getTower().get(4);
-	private ImageIcon tower_1 = Tile.getTower().get(5);
-	private ImageIcon play = Tile.getIcon().get(15);
-	private ImageIcon keluar = Tile.getIcon().get(16);
-	private JButton tower0 = new JButton("",tower_0);
-	private JButton tower1 = new JButton("",tower_1);
-	private JButton start = new JButton("",play);
-	private JButton exit = new JButton("",keluar);
-	private JLabel roket = new JLabel();
-	private JLabel cannon = new JLabel();
+	private ImageIcon imgTowerMissile = Tile.getTower().get(0);
+	private ImageIcon imgTowerGun = Tile.getTower().get(2);
+	private ImageIcon imgStart = Tile.getIcon().get(5);
+	private ImageIcon imgExit = Tile.getIcon().get(6);
+	private JButton towerMissile = new JButton("", imgTowerMissile);
+	private JButton towerGun = new JButton("", imgTowerGun);
+	private JButton start = new JButton("", imgStart);
+	private JButton exit = new JButton("", imgExit);
+	private JLabel missile = new JLabel();
+	private JLabel gun = new JLabel();
+	
 	public StatsPanel() {
 		setPreferredSize(new Dimension(PANELWIDTH, PANELHEIGHT));
 		setLayout(null);
+		
 		wave.setBounds(120, 20, 100, 50);
 		wave.setFont(new Font("Arial",Font.BOLD, 24));
-		tower0.setBounds(18,PANELHEIGHT/2-180, 128, 128);
-		tower1.setBounds(18,PANELHEIGHT/2-32, 128, 128);
+		
+		towerMissile.setBounds(18,PANELHEIGHT/2-180, 128, 128);
+		towerGun.setBounds(18,PANELHEIGHT/2-32, 128, 128);
+		
 		start.setBounds(80,PANELHEIGHT-200,150,50);
 		exit.setBounds(80,PANELHEIGHT-130,150,50);
+		
 		start.setBorderPainted(false);
 		start.setBackground(Color.YELLOW);
+		
 		exit.setBorderPainted(false);
 		exit.setBackground(Color.YELLOW);
-		roket.setText("<html>Rocket Launcher"
+		
+		missile.setText("<html>Rocket Launcher"
 				+ "<br>Damage      : "
 				+ "<br>Radius      :"
 				+ "<br>Cost        :"
 				+ "<br>Description : </html>");
-		roket.setBounds(150, PANELHEIGHT/2-207, 140	, 128);
-		cannon.setText("<html>Rocket Launcher"
+		missile.setBounds(150, PANELHEIGHT/2-207, 140	, 128);
+		
+		gun.setText("<html>Rocket Launcher"
 				+ "<br>Damage      : "
 				+ "<br>Radius      :"
 				+ "<br>Cost        :"
 				+ "<br>Description : </html>");
-		cannon.setBounds(150, PANELHEIGHT/2-57, 140	, 128);
-		add(cannon);
-		add(roket);
-		add(tower0);
-		add(tower1);
+		gun.setBounds(150, PANELHEIGHT/2-57, 140	, 128);
+		
+		towerMissile.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				GamePanel.setTowerHover(0);				
+			}
+		});
+		
+		towerGun.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				GamePanel.setTowerHover(2);						
+			}
+		});
+		
+		add(gun);
+		add(missile);
+		add(towerMissile);
+		add(towerGun);
 		add(wave);
 		add(start);
 		add(exit);
@@ -69,9 +92,9 @@ public class StatsPanel extends JPanel{
 		g.setColor(Color.CYAN);
 		g.drawRect(20,85, 285, 75);
 		g.fillRect(20, 85, 285, 75);
-		Paint_Gold_Panel(g);
+		paintGoldPanel(g);
 	}
-	public void Paint_Gold_Panel(Graphics g) {
+	public void paintGoldPanel(Graphics g) {
 		int start = 105;
 		int end = 90;
 		Image imge = Tile.getIcon().get(10).getImage();
