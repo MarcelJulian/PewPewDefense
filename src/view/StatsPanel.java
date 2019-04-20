@@ -9,6 +9,10 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import mainControl.Main;
+import objects.TowerGun;
+import objects.TowerMissile;
+
 
 @SuppressWarnings("serial")
 public class StatsPanel extends JPanel{
@@ -16,10 +20,10 @@ public class StatsPanel extends JPanel{
 	private final int PANELHEIGHT = GameFrame.GAMEHEIGHT + GameFrame.BORDERSIZE * 2;
 
 	private JLabel wave = new JLabel("Wave 1");
-	private ImageIcon imgTowerMissile = Tile.getTower().get(0);
-	private ImageIcon imgTowerGun = Tile.getTower().get(2);
-	private ImageIcon imgStart = Tile.getIcon().get(5);
-	private ImageIcon imgExit = Tile.getIcon().get(6);
+	private ImageIcon imgTowerMissile = Tile.getIcon().get(17);
+	private ImageIcon imgTowerGun = Tile.getIcon().get(18);
+	private ImageIcon imgStart = Tile.getIcon().get(15);
+	private ImageIcon imgExit = Tile.getIcon().get(16);
 	private JButton towerMissile = new JButton("", imgTowerMissile);
 	private JButton towerGun = new JButton("", imgTowerGun);
 	private JButton start = new JButton("", imgStart);
@@ -27,11 +31,36 @@ public class StatsPanel extends JPanel{
 	private JLabel missile = new JLabel();
 	private JLabel gun = new JLabel();
 	
+	Thread th = new Thread(new Runnable() {
+		
+		@Override
+		public void run() {
+			while(true) {
+				
+				String label = new String("Wave " + (Main.getMap().getCurWave()+1));
+				if(GamePanel.getLose()) label = new String("You Lose.");
+				else if(Main.getMap().getCurWave() == 4 && Main.getMomons().isEmpty()) {
+					label = new String("You Won!");
+				}
+				wave.setText(label);
+
+				
+				repaint();
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+		}
+	});
+	
 	public StatsPanel() {
 		setPreferredSize(new Dimension(PANELWIDTH, PANELHEIGHT));
 		setLayout(null);
-		
-		wave.setBounds(120, 20, 100, 50);
+
+		wave.setBounds(120, 20, 150, 50);
 		wave.setFont(new Font("Arial",Font.BOLD, 24));
 		
 		towerMissile.setBounds(18,PANELHEIGHT/2-180, 128, 128);
@@ -47,30 +76,49 @@ public class StatsPanel extends JPanel{
 		exit.setBackground(Color.YELLOW);
 		
 		missile.setText("<html>Rocket Launcher"
-				+ "<br>Damage      : "
-				+ "<br>Radius      :"
-				+ "<br>Cost        :"
-				+ "<br>Description : </html>");
+				+ "<br>Damage      : " + TowerMissile.getInitattack()
+				+ "<br>Radius      : 3 tiles, straight"
+				+ "<br>Cost        : " + TowerMissile.getInitcost() 
+				+ "</html>");
 		missile.setBounds(150, PANELHEIGHT/2-207, 140	, 128);
 		
-		gun.setText("<html>Rocket Launcher"
-				+ "<br>Damage      : "
-				+ "<br>Radius      :"
-				+ "<br>Cost        :"
-				+ "<br>Description : </html>");
+		gun.setText("<html>Gatling Gun"
+				+ "<br>Damage      : " + TowerGun.getInitattack()
+				+ "<br>Radius      : 12 tiles, surround"
+				+ "<br>Cost        : " + TowerGun.getInitcost()
+				+ "</html>");
 		gun.setBounds(150, PANELHEIGHT/2-57, 140	, 128);
 		
 		towerMissile.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				GamePanel.setTowerHover(0);				
+				if(Main.getGold() - TowerMissile.getInitcost() >= 0) {
+					GamePanel.setTowerHover(0);				
+				}
 			}
 		});
 		
 		towerGun.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				GamePanel.setTowerHover(2);						
+				if(Main.getGold() - TowerGun.getInitcost() >= 0) {
+					GamePanel.setTowerHover(2);				
+				}			
+			}
+		});
+		
+		start.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(GamePanel.getWaveStatus() == 0)
+					GamePanel.setWaveStatus(1);
+			}
+		});
+		
+		exit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
 			}
 		});
 		
@@ -83,6 +131,8 @@ public class StatsPanel extends JPanel{
 		add(exit);
 		setVisible(true);
 		repaint();
+		
+		th.start();
 	}
 	
 	@Override
@@ -98,7 +148,7 @@ public class StatsPanel extends JPanel{
 		int start = 105;
 		int end = 90;
 		Image imge = Tile.getIcon().get(10).getImage();
-		Integer gold = 87654;
+		Integer gold = Main.getGold();
 		int[] goldS = new int[6];
 		int div = 100000;
 		for(int i=0; i<5; i++) {

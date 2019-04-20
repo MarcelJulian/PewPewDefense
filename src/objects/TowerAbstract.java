@@ -14,7 +14,7 @@ public abstract class TowerAbstract {
 	protected Point coor;
 	protected ImageIcon img;
 	protected Vector<Point> ranges;
-	
+
 	public TowerAbstract(int attack, int speed, int dir, int cost, Point coor, Vector<Point> ranges) {
 		this.attack = attack;
 		this.speed = speed;
@@ -26,7 +26,6 @@ public abstract class TowerAbstract {
 	}
 	
 	public abstract void fire();
-	public abstract void upgrade();
 
 	public int getAttack() {
 		return attack;
@@ -54,6 +53,10 @@ public abstract class TowerAbstract {
 
 	public ImageIcon getImg() {
 		return img;
+	}
+	
+	public Vector<Point> getRanges() {
+		return ranges;
 	}
 	
 }

@@ -6,7 +6,6 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 
 import mainControl.Main;
-import view.GameFrame;
 import view.GamePanel;
 import view.Tile;
 
@@ -31,10 +30,12 @@ public class TowerGun extends TowerAbstract{
 				new ProjectileGun(attack, INITPROJSPEED, dir, gunDir, tempCoor, projImg));
 	}
 
-	@Override
-	public void upgrade() {
-		// TODO Auto-generated method stub
-		
+	public static int getInitattack() {
+		return INITATTACK;
+	}
+
+	public static int getInitcost() {
+		return INITCOST;
 	}
 
 	public void setGunDir(int gunDir) {

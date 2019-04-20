@@ -7,10 +7,10 @@ import javax.swing.ImageIcon;
 public class Tile {
 	private static ArrayList<ImageIcon> projectiles = new ArrayList<>();
 	private static ArrayList<ImageIcon> borders = new ArrayList<>();
-	private static ArrayList<ImageIcon> deco = new ArrayList<ImageIcon>();
+	private static ArrayList<ImageIcon> deco = new ArrayList<>();
 	private static ArrayList<ImageIcon> deco_red = new ArrayList<>();
 	private static ArrayList<ImageIcon> icon = new ArrayList<>();
-	private static ArrayList<ImageIcon> momon = new ArrayList<>();
+	private static ArrayList<ImageIcon> momons = new ArrayList<>();
 	private static ArrayList<ImageIcon> tiles = new ArrayList<>();
 	private static ArrayList<ImageIcon> tiles_red = new ArrayList<>();
 	private static ArrayList<ImageIcon> tower = new ArrayList<>();
@@ -62,19 +62,14 @@ public class Tile {
 		icon.add(new ImageIcon("res/Images/icon_titikdua.png"));
 		icon.add(new ImageIcon("res/Images/icon_15.png"));
 		icon.add(new ImageIcon("res/Images/icon_16.png"));
-		momon.add(new ImageIcon("res/Images/momon_1.png"));
-		momon.add(new ImageIcon("res/Images/momon_2.png"));
-		momon.add(new ImageIcon("res/Images/momon_3.png"));
-		momon.add(new ImageIcon("res/Images/momon_4.png"));
-		momon.add(new ImageIcon("res/Images/momon_5.png"));
-		momon.add(new ImageIcon("res/Images/momon_6.png"));
-		momon.add(new ImageIcon("res/Images/momon_7.png"));
-		momon.add(new ImageIcon("res/Images/momon_8.png"));
-		momon.add(new ImageIcon("res/Images/momon_9.png"));
-		momon.add(new ImageIcon("res/Images/momon_10.png"));
-		momon.add(new ImageIcon("res/Images/momon_11.png"));
-		momon.add(new ImageIcon("res/Images/momon_12.png"));
-
+		icon.add(new ImageIcon("res/Images/icon_17.png"));
+		icon.add(new ImageIcon("res/Images/icon_18.png"));
+		momons.add(new ImageIcon("res/Images/momon_0.png"));
+		momons.add(new ImageIcon("res/Images/momon_1.png"));
+		momons.add(new ImageIcon("res/Images/momon_2.png"));
+		momons.add(new ImageIcon("res/Images/momon_3.png"));
+		momons.add(new ImageIcon("res/Images/momon_4.png"));
+		momons.add(new ImageIcon("res/Images/momon_5.png"));
 		tiles.add(new ImageIcon("res/Images/tile_0.png"));
 		tiles.add(new ImageIcon("res/Images/tile_1.png"));
 		tiles.add(new ImageIcon("res/Images/tile_2.png"));
@@ -146,8 +141,8 @@ public class Tile {
 		return icon;
 	}
 
-	public static ArrayList<ImageIcon> getMomon() {
-		return momon;
+	public static ArrayList<ImageIcon> getMomons() {
+		return momons;
 	}
 
 	public static ArrayList<ImageIcon> getTiles() {

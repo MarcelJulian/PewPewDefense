@@ -4,8 +4,6 @@ import java.awt.Point;
 
 import javax.swing.ImageIcon;
 
-import view.GameFrame;
-
 public class Projectile {
 	protected int attack;
 	protected int speed;

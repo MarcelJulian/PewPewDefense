@@ -13,12 +13,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import mainControl.Main;
-import objects.Projectile;
-import objects.ProjectileGun;
-import objects.ProjectileMissile;
-import objects.TowerAbstract;
-import objects.TowerGun;
-import objects.TowerMissile;
+import objects.*;
 
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel {
@@ -37,8 +32,15 @@ public class GamePanel extends JPanel {
 
 	private final Rectangle GAMEAREA = new Rectangle(GameFrame.BORDERSIZE, GameFrame.BORDERSIZE, GameFrame.GAMEWIDTH,
 			GameFrame.GAMEHEIGHT);
+	GameMap gMap = Main.getMap();
 	private int[][] mapCode;
+	private int[][] pathCode;
+	
+	private static int waveStatus = 0;
+	private Vector<MomonParent> momons = new Vector<MomonParent>();
 
+	private static boolean lose;
+	
 	private MouseMotionListener mouseMotionLister = new MouseMotionListener() {
 
 		@Override
@@ -47,8 +49,7 @@ public class GamePanel extends JPanel {
 			if (GAMEAREA.contains(p)) {
 				p.x = (p.x - GameFrame.BORDERSIZE) / GameFrame.TILESIZE;
 				p.y = (p.y - GameFrame.BORDERSIZE) / GameFrame.TILESIZE;
-				hover = (Point) p.clone();
-//				System.out.println(p);
+				hover = (Point) p.clone();;
 			} else
 				hover = null;
 			repaint();
@@ -108,10 +109,12 @@ public class GamePanel extends JPanel {
 				if (mapCode[p.y][p.x] == 0) {
 					if (towerHover == 0) {
 						Main.addTower(new TowerMissile(towerDir, p, towerRanges));
-						mapCode[p.y][p.x] = 31;
+						mapCode[p.y][p.x] = 31;	
+						Main.reduceGold(TowerMissile.getInitcost());
 					} else if (towerHover == 2) {
 						Main.addTower(new TowerGun(towerDir, p, towerRanges));
 						mapCode[p.y][p.x] = 33;
+						Main.reduceGold(TowerGun.getInitcost());
 					}
 				}
 				towerHover = -1;
@@ -123,6 +126,7 @@ public class GamePanel extends JPanel {
 
 	private Thread th = new Thread(new Runnable() {
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public void run() {
 			int counter = 0;
@@ -136,27 +140,79 @@ public class GamePanel extends JPanel {
 							isOutOfRange = ((ProjectileMissile) p).isOutOfRange();
 							if (isOutOfRange)
 								toBeRemoved.add(p);
+							
+							for(MomonParent m : Main.getMomons()) {
+								if(m.getHitBox().intersects(((ProjectileMissile) p).getHitBox())) {
+									toBeRemoved.add(p);
+									m.reduceHP(p.getAttack());
+									if(m.isDead()) {
+										Main.addGold(m.getGold());
+										Main.removeMomon(m);
+									}
+									break;
+								}
+							}
+							
 						}
 					}else if(p instanceof ProjectileGun && counter % 150 == 0) {
 						toBeRemoved.add(p);
 					}
 				}
 				Main.getProjectiles().removeAll(toBeRemoved);
-
+				
 				for (TowerAbstract t : Main.getTowers()) {
-					if (t instanceof TowerGun) {
-						if (counter * 1000 == 0) {
-							((TowerGun) t).setGunDir((((TowerGun) t).getGunDir() + 1 % 12));
+					for (MomonParent m : Main.getMomons()) {										
+						Point temp = new Point(GamePanel.getSimplifiedCoor(m.getCoor().x),
+								GamePanel.getSimplifiedCoor(m.getCoor().y));
+						
+						if(t.getRanges().contains(temp)) {
+							if(counter % t.getSpeed() != 0) break;							
+							if (t instanceof TowerGun) {
+								int tempDir = t.getRanges().indexOf(temp);
+								((TowerGun) t).setGunDir(tempDir);
+								m.reduceHP(t.getAttack());
+								if(m.isDead()) {
+									Main.addGold(m.getGold());
+									Main.removeMomon(m);									
+								}
+							}							
+							t.fire();
+							break;
 						}
-							if (counter % t.getSpeed() == 0) {
-								t.fire();
-							}
-					}
-
+					}								
 				}
+				
+				for (MomonParent m : Main.getMomons()) {
+					if (counter % m.getSpeed() == 0) {
+						m.setDir(pathCode);
+						m.move();
+						if(m.getCoor().x >= 1008) {
+							lose = true;
+						}
+					}
+				}
+				
+				if(waveStatus == 1) {
+					if(momons.isEmpty() && Main.getMomons().isEmpty()) {
+						if(gMap.getCurWave() != 4) {
+							gMap.nextWave();						
+							momons = (Vector<MomonParent>) gMap.getWaves().get(gMap.getCurWave()).getMomons().clone();
+						}
+					}else {
+						if(momons.isEmpty()) {
+							waveStatus = 0;							
+						}else if(counter % 5000 == 0) {
+							MomonParent tempMomon = momons.get(0);
+							Main.addMomon(tempMomon);
+							momons.remove(tempMomon);
+							
+						}
+					}
+				}
+				
 				repaint();
 				counter += 25;
-				counter %= 1000;
+				counter %= 3000;
 				try {
 					Thread.sleep(25);
 				} catch (InterruptedException e) {
@@ -168,8 +224,10 @@ public class GamePanel extends JPanel {
 	});
 
 	public GamePanel() {
-		mapCode = new int[GameFrame.TILECOUNTy][GameFrame.TILECOUNTx];
-		mapCode = Main.getMap().getMapCode();
+		mapCode = new int[GameFrame.TILECOUNTy][GameFrame.TILECOUNTx];		
+		mapCode = gMap.getMapCode();
+		gMap.initWaves();
+		pathCode = gMap.getPathCode();
 
 		setPreferredSize(maxSize);
 //		setBackground(Color.BLACK);
@@ -185,6 +243,10 @@ public class GamePanel extends JPanel {
 	public static int getTileCoor(int a) {
 		return a * GameFrame.TILESIZE + GameFrame.BORDERSIZE;
 	}
+	
+	public static int getSimplifiedCoor(int a) {
+		return (a - GameFrame.BORDERSIZE) / GameFrame.TILESIZE;
+	}
 
 	public static int checkOutOfBound(int a) {
 		return a < 0 ? 0 : a;
@@ -194,6 +256,18 @@ public class GamePanel extends JPanel {
 		towerHover = temp;
 	}
 	
+	public static int getWaveStatus() {
+		return waveStatus;
+	} 
+	
+	public static void setWaveStatus(int waveStatus) {
+		GamePanel.waveStatus = waveStatus;
+	}
+	
+	public static boolean getLose() {
+		return lose;
+	}
+
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -202,6 +276,7 @@ public class GamePanel extends JPanel {
 		paintBorders(g);
 		paintTowers(g);
 		paintProjectiles(g);
+		paintMomons(g);
 		paintHover(g);
 	}
 
@@ -259,8 +334,8 @@ public class GamePanel extends JPanel {
 				int srcy = getTileCoor(i);
 
 				g.drawImage(img.getImage(), srcx, srcy, getTileCoor(j + 1), getTileCoor(i + 1), 0, 0, 64, 64, null);
-				g.drawLine(srcx, srcy, srcx + GameFrame.TILESIZE, srcy);
-				g.drawLine(srcx, srcy, srcx, srcy + GameFrame.TILESIZE);
+//				g.drawLine(srcx, srcy, srcx + GameFrame.TILESIZE, srcy);
+//				g.drawLine(srcx, srcy, srcx, srcy + GameFrame.TILESIZE);
 			}
 		}
 
@@ -291,8 +366,7 @@ public class GamePanel extends JPanel {
 	}
 
 	private void paintTowerRange(Graphics g) {
-		if (!towerRanges.isEmpty())
-			towerRanges.clear();
+		towerRanges = new Vector<Point>();
 		if (towerHover == 0) {
 			for (int i = 1; i <= 5; i++) {
 				int idxX = hover.x;
@@ -374,7 +448,6 @@ public class GamePanel extends JPanel {
 
 			}
 		}
-
 	}
 
 	private void paintTowers(Graphics g) {
@@ -451,8 +524,33 @@ public class GamePanel extends JPanel {
 					64, 64, null);
 
 			g2d.setTransform(old);
+			
+//			if(p instanceof ProjectileMissile)
+//				g.drawRect(((ProjectileMissile)p).getHitBox().x, ((ProjectileMissile)p).getHitBox().y, 
+//					((ProjectileMissile)p).getHitBox().width, ((ProjectileMissile)p).getHitBox().height);
 
 		}
 	}
+	
+	private void paintMomons(Graphics g) {
+		Graphics2D g2d = (Graphics2D) g;
+		AffineTransform old = g2d.getTransform();
+		AffineTransform a = null;
 
+		for (MomonParent m : Main.getMomons()) {
+			int srcX = m.getCoor().x; 
+			int srcY = m.getCoor().y;
+				a = AffineTransform.getRotateInstance(
+								Math.toRadians((m.getDir()-1) * 90), 
+								srcX + 24, srcY + 24);
+
+			g2d.setTransform(a);
+
+			g2d.drawImage(m.getImg().getImage(), srcX, srcY, srcX + GameFrame.TILESIZE, srcY + GameFrame.TILESIZE, 0, 0,
+					64, 64, null);
+
+			g2d.setTransform(old);
+//			g.drawRect(m.getHitBox().x, m.getHitBox().y, m.getHitBox().width, m.getHitBox().height);
+		}
+	}
 }

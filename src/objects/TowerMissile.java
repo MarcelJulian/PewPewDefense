@@ -9,8 +9,8 @@ import mainControl.Main;
 import view.*;
 
 public class TowerMissile extends TowerAbstract{
-	private final static int INITATTACK = 100;
-	private final static int INITSPEED = 2000; //2 sec
+	private final static int INITATTACK = 125;
+	private final static int INITSPEED = 1500;
 	private final static int INITCOST = 50;
 	private final static int INITPROJSPEED = 25;
 	private final ImageIcon projImg = Tile.getProjectiles().get(0);
@@ -51,11 +51,14 @@ public class TowerMissile extends TowerAbstract{
 		
 	}
 
-	@Override
-	public void upgrade() {
-		// TODO Auto-generated method stub
-		
+	public static int getInitattack() {
+		return INITATTACK;
 	}
+
+	public static int getInitcost() {
+		return INITCOST;
+	}
+
 
 
 }
